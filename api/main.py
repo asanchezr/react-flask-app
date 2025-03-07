@@ -1,5 +1,9 @@
 import time
 from flask import Flask, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+cors = CORS(app, origins="*")
 
 startTime = time.time()
 
@@ -10,9 +14,6 @@ def getUptime():
     """
     # do return startTime if you just want the process start time
     return time.time() - startTime
-
-
-app = Flask(__name__)
 
 
 @app.route("/healthz")
