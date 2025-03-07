@@ -8,7 +8,7 @@ cors = CORS(app, origins="*")
 startTime = time.time()
 
 
-def getUptime():
+def get_uptime():
     """
     Returns the number of seconds since the program started.
     """
@@ -17,5 +17,5 @@ def getUptime():
 
 
 @app.route("/healthz")
-def healthcheck():
-    return jsonify({"status": "Server available", "uptime": getUptime()})
+def health_check():
+    return jsonify({"status": "Server available", "uptime": get_uptime()})
