@@ -19,13 +19,12 @@ export default defineConfig({
     alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
   },
   server: {
-    open: true,
     port: 3000,
     proxy: {
       '/api': {
         target: 'http://localhost:5000/',
         changeOrigin: true,
-        rewrite: (path: string) => path,
+        rewrite: (path: string) => path.replace(/^\/api/, '/'),
         xfwd: true,
         cookiePathRewrite: '/',
         cookieDomainRewrite: '',
