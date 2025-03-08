@@ -1,33 +1,25 @@
 import { nanoid } from 'nanoid';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { MapContainer, ScaleControl, TileLayer } from 'react-leaflet';
 
-import { FeatureCollection } from 'geojson';
+import { LeafletMouseEvent } from 'leaflet';
 import { FeatureMarker } from './FeatureMarker';
-import { PointFeature } from './types';
+import { useSearchNearby } from './hooks';
+import { MapEvents } from './MapEvents';
 
 const victoriaBC = [48.4231, -123.3661];
 
 export const MapView: React.FC<unknown> = () => {
-  const [results, setResults] = useState<PointFeature[]>([]);
+  const { results, findNearby } = useSearchNearby();
 
-  const fetchNearbyPlaces = async (lat: number, lon: number) => {
-    try {
-      const url = new URL('/api/places', document.baseURI);
-      url.searchParams.set('lat', lat.toString());
-      url.searchParams.set('lon', lon.toString());
-
-      const apiResponse = await fetch(url.toString());
-      const data: FeatureCollection = await apiResponse.json();
-      setResults(data.features as PointFeature[]);
-    } catch (error) {
-      console.error(error);
-    }
+  // get new results whenever the user clicks the map
+  const handleMapClick = (event: LeafletMouseEvent) => {
+    findNearby(event.latlng.lat, event.latlng.lng);
   };
 
   useEffect(() => {
-    fetchNearbyPlaces(victoriaBC[0], victoriaBC[1]);
-  }, []);
+    findNearby(victoriaBC[0], victoriaBC[1]);
+  }, [findNearby]);
 
   return (
     <div className="w-screen h-screen grid relative p-0">
@@ -36,6 +28,7 @@ export const MapView: React.FC<unknown> = () => {
         zoom={16}
         scrollWheelZoom={true}
       >
+        <MapEvents click={(e) => handleMapClick(e)} />
         <ScaleControl metric={true} imperial={false}></ScaleControl>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
