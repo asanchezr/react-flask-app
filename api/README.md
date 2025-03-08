@@ -41,3 +41,11 @@ Linux/Mac OS
 ```
         flask run
 ```
+
+6. Use browser (or postman, curl) to call the API
+
+```
+        curl 'http://localhost:5000/places?lat=48.4231&lon=-123.3661'
+```
+
+![image](sample-request.png)
