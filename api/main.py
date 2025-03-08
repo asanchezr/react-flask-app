@@ -1,31 +1,25 @@
-import time
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
+
+
+from .routes import api
 
 app = Flask(__name__)
 cors = CORS(app, origins="*")
 
-start_time = time.time()
+# import api blueprint to register it with app
+app.register_blueprint(api, url_prefix="/")
 
 
-def get_uptime():
-    """
-    Returns the number of seconds since the program started.
-    """
-    return time.time() - start_time
+# show HTTP error pages as json
+@app.errorhandler(404)
+@app.errorhandler(405)
+def handle_api_error(ex):
+    if request.path.startswith("/"):
+        return jsonify(error=str(ex)), ex.code
+    else:
+        return ex
 
 
-@app.route("/healthz")
-def health_check():
-    return jsonify(
-        {
-            "status": "Server available",
-            "uptime": get_uptime(),
-            "upSince": time.ctime(start_time),
-        }
-    )
-
-
-@app.route("/")
-def index():
-    return "404 page not found"
+if __name__ == "__main__":
+    app.run()
